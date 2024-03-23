@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>HBAMFL Brands API Docs</title>
+    <link rel="stylesheet" href="https://unpkg.com/docute@4/dist/docute.css" />
+  </head>
+  <body>
+    <div id="docute"></div>
+    <script src="https://unpkg.com/docute@4/dist/docute.js"></script>
+    <!-- <script src="_docs-targets.js"></script> -->
+    <script>
+      new Docute({
+        target: "#docute",
+        sourcePath: "./src/",
+        darkThemeToggler: true,
+        detectSystemDarkTheme: true,
+        highlight: ["markdown", "typescript", "bash", "json", "php"],
+        title: "Docs",
+
+        sidebar: [
+          {
+            title: "HBA MFL BRANDS API",
+            children: [
+              {
+                title: "Introduction",
+                link: "/introduction",
+              },
+              {
+                title: "Authentication",
+                link: "/authentication",
+              },
+              {
+                title: "Filters, Queries, & joins",
+                link: "/filters",
+              },
+
+              {
+                title: "Errors",
+                link: "/errors",
+              },
+            ],
+          },
+
+          // An external link
+          {
+            title: "GitHub",
+            link: "https://github.com/CloudSnob/errands-dispatching",
+          },
+        ],
+      });
+    </script>
+  </body>
+</html>
