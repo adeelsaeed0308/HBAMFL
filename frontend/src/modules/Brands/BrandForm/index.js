@@ -68,7 +68,7 @@ const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
       data: dissoc("id", {
         ...values,
         currency: getCurrencyObject(values.currency),
-        overseas: overseasChecked
+        isOverseas: overseasChecked
       }),
     });
   };
