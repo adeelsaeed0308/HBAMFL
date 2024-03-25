@@ -46,6 +46,7 @@ import {
 } from "./styles";
 import VendorBrands from "common/modules/VendorBrands";
 import Notes from "./Notes";
+import Overseas from "./overseas";
 
 const ViewBrand = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const ViewBrand = () => {
   const [showChildBrands, setShowChildBrands] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const { brandId } = useParams();
-
+  const isOverseas = true;
   const { refetch, response } = useAxios({
     clearResponse: false,
     callOnLoad: {
@@ -82,6 +83,7 @@ const ViewBrand = () => {
   });
 
   const parentBrand = response?.data;
+  console.log('parentBrand', parentBrand)
 
   const alert = useAlertModal("Please Ensure Up-front Payment");
 
@@ -111,6 +113,12 @@ const ViewBrand = () => {
         <ExcelView brand={childBrand || brand} params={params} />
       );
   };
+
+  const openOverseasModal = (margin) => {
+    setModalContent(
+      <Overseas brand={brand} margin={margin} />
+    );
+  };
   const linkParams = { [linkPlaceholders.brandId]: brand.id };
   const {
     currency: { symbol },
@@ -118,15 +126,13 @@ const ViewBrand = () => {
   const hasMaxOrderDollarAmount = !!brand.maximumOrderDollarAmount;
   const amountRange = `${symbol}${numberWithCommas(
     brand.minimumOrderDollarAmount || 0
-  )}${
-    hasMaxOrderDollarAmount
-      ? ` - ${symbol}${numberWithCommas(brand.maximumOrderDollarAmount || 0)}`
-      : ""
-  }`;
+  )}${hasMaxOrderDollarAmount
+    ? ` - ${symbol}${numberWithCommas(brand.maximumOrderDollarAmount || 0)}`
+    : ""
+    }`;
   const hasMaxItemAmount = !!brand.maximumOrderItems;
-  const itemRange = `${brand.minimumOrderItems || 0}${
-    hasMaxItemAmount ? ` - ${brand.maximumOrderItems || 0}` : ""
-  }`;
+  const itemRange = `${brand.minimumOrderItems || 0}${hasMaxItemAmount ? ` - ${brand.maximumOrderItems || 0}` : ""
+    }`;
   const generateLink = generateLinkWithParams(__, linkParams);
   const suggestedMargin = isKanda()
     ? Math.max(brand.suggestedMargin, 30)
@@ -154,18 +160,24 @@ const ViewBrand = () => {
         <BrandKpi
           key={margin.title}
           onClick={() => {
-            const open = () =>
-              openModal(
-                {
-                  margin: margin.margin,
-                },
-                brand.itemsHaveCostPrice
-              );
-            if (margin.margin < 12) {
-              alert(null, open);
-            } else {
-              open();
+            if (isOverseas) {
+              openOverseasModal(margin);
             }
+            // if (selectedLocation !== "") {
+            //   const open = () =>
+            //     openModal(
+            //       {
+            //         margin: margin.margin,
+            //       },
+            //       brand.itemsHaveCostPrice
+            //     );
+            //   if (margin.margin < 12) {
+            //     alert(null, open);
+            //   } else {
+            //     open();
+            //   }
+            // }
+
           }}
         >
           <h3>{margin.margin || 0}%</h3>
@@ -338,11 +350,10 @@ const ViewBrand = () => {
                       <Form>
                         <Field
                           name="margin"
-                          label={`Profit Margin %${
-                            !brand.itemsHaveCostPrice
-                              ? " (Items do not have Cost Price)"
-                              : ""
-                          }`}
+                          label={`Profit Margin %${!brand.itemsHaveCostPrice
+                            ? " (Items do not have Cost Price)"
+                            : ""
+                            }`}
                           disabled={!brand.itemsHaveCostPrice || values.isRaw}
                           required
                           component={TextField}
@@ -358,11 +369,10 @@ const ViewBrand = () => {
                         />
                         <Field
                           name="MSRPDiscount"
-                          label={`Discount %${
-                            !brand.itemsHaveMSRP
-                              ? " (Items do not have MSRP)"
-                              : ""
-                          }`}
+                          label={`Discount %${!brand.itemsHaveMSRP
+                            ? " (Items do not have MSRP)"
+                            : ""
+                            }`}
                           disabled={
                             !brand.itemsHaveMSRP || values.isRaw || isKanda()
                           }
@@ -459,6 +469,7 @@ const ViewBrand = () => {
                           } else {
                             open();
                           }
+                          setModalContent(<Overseas />)
                         }}
                       >
                         <TextStyledLink>{margin.margin || 0}%</TextStyledLink>

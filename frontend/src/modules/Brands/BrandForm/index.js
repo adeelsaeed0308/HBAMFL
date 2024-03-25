@@ -14,6 +14,7 @@ import {
   PageContainer,
   routing,
   TextField,
+  useAlertModal,
   useAxios,
   useBrands,
   useCategories,
@@ -30,7 +31,10 @@ import { Form } from "./styles.js";
 const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
   const { onError, alertSuccess } = useToast();
   const { brandId } = useParams();
+
   const [overseasChecked, setOverseasChecked] = useState(false);
+  const alert = useAlertModal("Please Ensure Up-front Payment");
+
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -39,8 +43,8 @@ const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
       !id
         ? routing.brands.root
         : generateLinkWithParams(routing.brands.view, {
-            [linkPlaceholders.brandId]: id,
-          })
+          [linkPlaceholders.brandId]: id,
+        })
     );
   const { callAxios } = useAxios();
   const { callAxios: getSampleFile, loading: loadingSampleFile } = useAxios({
@@ -64,6 +68,7 @@ const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
       data: dissoc("id", {
         ...values,
         currency: getCurrencyObject(values.currency),
+        overseas: overseasChecked
       }),
     });
   };
@@ -79,7 +84,7 @@ const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
       const imageFile = new File(
         [values.image],
         `${values.name}_image`.replace(/ /g, "_").toLowerCase() +
-          values.image.type.replace("image/", ".")
+        values.image.type.replace("image/", ".")
       );
       const data = new FormData();
       data.append("file", imageFile);
@@ -118,6 +123,13 @@ const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
   const generateLink = generateLinkWithParams(__, {
     [linkPlaceholders.brandId]: brandId,
   });
+  const handleCheckboxChange = (e) => {
+    const value = e.target.checked;
+    console.log('e', e.target.checked)
+    setOverseasChecked(value)
+
+  }
+  console.log('overseasChecked', overseasChecked)
 
   return (
     <PageContainer>
@@ -125,14 +137,15 @@ const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
         {parentBrand
           ? `Add Pricesheet to ${parentBrand}`
           : isEdit
-          ? "Update Brand"
-          : "Add Brand"}
+            ? "Update Brand"
+            : "Add Brand"}
       </h1>
       <Formik
         enableReinitialize
         {...formikSchema}
         onSubmit={(values) => {
           setLoading(true);
+          console.log('values', values)
           const submitFunction = isEdit ? handleSubmitEdit : handleSubmit;
           submitFunction(values)
             .then(async (res) => {
@@ -244,12 +257,15 @@ const BrandForm = ({ isEdit, formikSchema, parentBrand }) => {
                     name="overseas"
                     component="input"
                     type="checkbox"
+                    onChange={handleCheckboxChange}
+                    checked={overseasChecked}
                     id="overseas"
                     style={{
                       marginLeft: "65px",
                       marginTop: "6px",
                       transform: "scale(1.2)",
                     }}
+
                   />
                 </div>
               </ItemSplitter>
